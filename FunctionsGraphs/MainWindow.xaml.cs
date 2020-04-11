@@ -21,8 +21,10 @@ namespace FunctionsGraphs
     /// </summary>
     public partial class MainWindow : Window
     {
-        double h, x1, x2, a, b, c;
+        double h, l, a, b, c;
         int f;
+
+        double XTransform, YTransform;
 
         private double ParabolaFunc(double x)
         {
@@ -41,9 +43,11 @@ namespace FunctionsGraphs
 
         private void InputData()
         {
-            h = double.Parse(IntervalLength.Text);
-            x1 = double.Parse(StartX.Text);
-            x2 = double.Parse(EndX.Text);
+            l = double.Parse(IntervalLength.Text);
+            h = double.Parse(H.Text);
+
+            XTransform = Surface.Width / (2 * l);
+            YTransform = Surface.Height / (2 * l);
 
             Input.Visibility = System.Windows.Visibility.Hidden;
             Parameters.Visibility = System.Windows.Visibility.Visible;
@@ -59,6 +63,8 @@ namespace FunctionsGraphs
         private void StartBtn_Click(object sender, RoutedEventArgs e)
         {
             InputData();
+            Surface.Children.Clear();
+            DrawAxis();
         }
 
         private void Parabola_Checked(object sender, RoutedEventArgs e)
@@ -79,32 +85,82 @@ namespace FunctionsGraphs
         private void ParamsBtn_Click(object sender, RoutedEventArgs e)
         {
             InputParams();
-            Parameters.Visibility = System.Windows.Visibility.Hidden;
 
             if (f == 1) DrawFunc(ParabolaFunc);
             else if (f == 2) DrawFunc(SinusFunc);
             else if (f == 3) DrawFunc(SinDivXFunc);
-            
+        }
+
+        private void NewBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Parameters.Visibility = System.Windows.Visibility.Hidden;
+            Input.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private void DrawLine(double x1, double y1, double x2, double y2, double l, Brush color)
+        {
+            Line line = new Line
+            {
+                X1 = x1,
+                Y1 = y1,
+                X2 = x2,
+                Y2 = y2,
+                Stroke = color,
+                StrokeThickness = l
+            };
+
+            Surface.Children.Add(line);
         }
 
         private void DrawAxis()
         {
-            Line XAxis = new Line();
+            int width = (int)Surface.Width;
+            int height = (int)Surface.Height;
 
-            XAxis.X1 = 0;
-            XAxis.Y1 = Surface.Height / 2;
-            XAxis.X2 = Surface.Width;
-            XAxis.Y2 = XAxis.Y1;
+            int centerX = width / 2;
+            int centerY = height / 2;
 
-            XAxis.Stroke = System.Windows.Media.Brushes.Black;
-            XAxis.StrokeThickness = 4;
+            // рисую вертикальные линии координатной сетки
+            for (double x = 0; x <= centerX ; x += XTransform)
+            {
+                DrawLine(centerX + x, 0, centerX + x, height, 1, System.Windows.Media.Brushes.Gray);
+                DrawLine(centerX - x, 0, centerX - x, height, 1, System.Windows.Media.Brushes.Gray);
+            }
 
-            Surface.Children.Add(XAxis);
+            // рисую горизонтальные линии координатной сетки
+            for (double y = 0; y <= centerY; y += YTransform)
+            {
+                DrawLine(0, centerY + y, width, centerY + y, 1, System.Windows.Media.Brushes.Gray);
+                DrawLine(0, centerY - y, width, centerY - y, 1, System.Windows.Media.Brushes.Gray);
+            }
+
+            //рисую ось Х
+            DrawLine(0, centerY, width, centerY, 2, System.Windows.Media.Brushes.Black);
+
+            // рисую ось у
+            DrawLine( centerX, 0, centerX, height, 2, System.Windows.Media.Brushes.Black);
         }
 
         private void DrawFunc(Func<double, double> f)
         {
-            DrawAxis();
+            double x1 = -l;
+            double y1 = (l - f(x1)) * YTransform;
+            double x2 = -l;
+            double y2;
+
+            do
+            {
+                x2 += h;
+                y2 = (l - f(x2)) * YTransform;
+
+                DrawLine((x1 + l) * XTransform, y1,
+                         (x2 + l) * XTransform, y2,
+                         2, System.Windows.Media.Brushes.Blue);
+
+                x1 = x2;
+                y1 = y2;
+
+            } while (x2 < l);
         }
 
         public MainWindow()

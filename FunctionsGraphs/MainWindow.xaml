@@ -5,42 +5,45 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FunctionsGraphs"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1000">
+        Title="MainWindow" Height="700" Width="1020">
 
-    <Grid Margin="13,7,7,13">
-        <Grid Name="Input" Margin="367,211,367,211">
+    <Grid Margin="10,10,10,10">
+        <Grid Name="Input" Margin="367,211,313,184" Background="White" Panel.ZIndex="1">
 
-            <Label Content="h:" HorizontalAlignment="Left" Margin="39,28,0,0" VerticalAlignment="Top" Height="25" Width="29"/>
-            <TextBox Name="IntervalLength" HorizontalAlignment="Left" Margin="73,32,0,0" Text="0,01" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
 
-            <Label Content="x1:" HorizontalAlignment="Left" Margin="39,53,0,0" VerticalAlignment="Top" Width="29" Height="25"/>
-            <TextBox Name="StartX" HorizontalAlignment="Left" Margin="73,57,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" SelectionOpacity="-1"/>
+            <Label Content="h:" HorizontalAlignment="Left" Margin="48,28,0,0" VerticalAlignment="Top" Height="25" Width="29"/>
+            <TextBox Name="H" HorizontalAlignment="Center" Margin="0,32,0,0" Text="0,01" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
 
-            <Label Content="x2:" HorizontalAlignment="Left" Margin="39,78,0,0" VerticalAlignment="Top" Height="27" Width="29"/>
-            <TextBox Name="EndX" HorizontalAlignment="Left" Margin="73,82,0,0" Text="10" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="17.96"/>
+            <Label Content="length:" HorizontalAlignment="Left" Margin="39,58,0,0" VerticalAlignment="Top" Height="28"/>
+            <TextBox Name="IntervalLength" HorizontalAlignment="Center" Margin="0,63,0,0" Text="10" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
 
-            <RadioButton Name="Parabola" Content="ax^2+bx+c" HorizontalAlignment="Left" Margin="73,131,0,0" VerticalAlignment="Top" ClickMode="Release" IsChecked="True" Checked="Parabola_Checked"/>
-            <RadioButton Name="Sinus" Content="sin" HorizontalAlignment="Left" Margin="73,146,0,0" VerticalAlignment="Top" Width="80" Checked="Sinus_Checked"/>
-            <RadioButton Name="SinusDivX" Content="sin(x)/x" HorizontalAlignment="Left" Margin="73,161,0,0" VerticalAlignment="Top" Width="80" Checked="SinusDivX_Checked"/>
+            <RadioButton Name="Parabola" Content="ax^2+bx+c" HorizontalAlignment="Center" Margin="0,118,0,0" VerticalAlignment="Top" ClickMode="Release" IsChecked="True" Checked="Parabola_Checked" Width="86"/>
+            <RadioButton Name="Sinus" Content="sin(x)" HorizontalAlignment="Center" Margin="0,138,0,0" VerticalAlignment="Top" Width="86" Checked="Sinus_Checked"/>
+            <RadioButton Name="SinusDivX" Content="sin(x)/x" HorizontalAlignment="Center" Margin="0,158,0,0" VerticalAlignment="Top" Width="86" Checked="SinusDivX_Checked"/>
 
-            <Button Name="StartBtn" Content="Ввести" HorizontalAlignment="Left" Margin="76,201,0,0" VerticalAlignment="Top" Width="74" ClickMode="Release" Click="StartBtn_Click"/>
+            <Button Name="StartBtn" Content="Ввести" HorizontalAlignment="Center" Margin="0,207,0,0" VerticalAlignment="Top" Width="74" ClickMode="Release" Click="StartBtn_Click"/>
+
+            <Border BorderBrush="Silver" BorderThickness="2" CornerRadius="10"/>
         </Grid>
 
-        <Grid Name="Parameters" Margin="678,48,36,436" Visibility="Hidden">
-            
-            <Label Content="a:" HorizontalAlignment="Left" Margin="25,21,0,0" VerticalAlignment="Top" Height="27" Width="30"/>
-            <TextBox Name="Param1" HorizontalAlignment="Center" Margin="0,26,0,0" Text="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Grid Name="Parameters" Margin="678,48,36,436" Background="White" Visibility="Hidden" Panel.ZIndex="1">
 
-            <Label Content="b:" HorizontalAlignment="Left" Margin="25,48,0,0" VerticalAlignment="Top" Width="30" Height="23"/>
-            <TextBox Name="Param2" HorizontalAlignment="Center" Margin="0,51,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+            <Label Content="a:" HorizontalAlignment="Left" Margin="79,25,0,0" VerticalAlignment="Top" Height="24" Width="30"/>
+            <TextBox Name="Param1" HorizontalAlignment="Left" Margin="114,31,0,0" Text="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
 
-            <Label  Content="c:" HorizontalAlignment="Left" Margin="25,71,0,0" VerticalAlignment="Top" Height="24" Width="30"/>
-            <TextBox Name="Param3" HorizontalAlignment="Center" Margin="0,74,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-            
-            <Button Name="ParamsBtn" Content="Нарисовать!" HorizontalAlignment="Center" Margin="0,131,0,0" VerticalAlignment="Top" Width="96" Height="24" Click="ParamsBtn_Click"/>
+            <Label Content="b:" HorizontalAlignment="Left" Margin="79,49,0,0" VerticalAlignment="Top" Width="30" Height="23"/>
+            <TextBox Name="Param2" HorizontalAlignment="Left" Margin="114,54,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+
+            <Label  Content="c:" HorizontalAlignment="Left" Margin="79,71,0,0" VerticalAlignment="Top" Height="24" Width="30"/>
+            <TextBox Name="Param3" HorizontalAlignment="Left" Margin="114,77,0,0" Text="0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+
+            <Button Name="ParamsBtn" Content="Нарисовать!" HorizontalAlignment="Left" Margin="34,123,0,0" VerticalAlignment="Top" Width="96" Height="24" Click="ParamsBtn_Click"/>
+            <Button Name="NewBtn" Content="Новый график" HorizontalAlignment="Left" Margin="164,123,0,0" VerticalAlignment="Top" Height="24" Width="100" Click="NewBtn_Click"/>
+
+            <Border BorderBrush="Silver" BorderThickness="2" CornerRadius="10"></Border>
         </Grid>
 
-        <Canvas Name="Surface" Margin="10, 10, 10, 10" Height="600" Width="960" Visibility="Hidden"/>
+        <Canvas Name="Surface" Margin="10, 10, 10, 10" Height="600" Width="960" Panel.ZIndex="0"/>
 
     </Grid>
 </Window>
