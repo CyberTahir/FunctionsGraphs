@@ -23,9 +23,8 @@ namespace FunctionsGraphs
     {
         double h, l, a, b, c;
         bool hasDrawn = false;
-        const double epsilon = 0.001;
+        const double epsilon = 0.3;
         Func<double, double> f;
-        Ellipse dot;
 
         double cellSize, centerX, centerY;
 
@@ -92,6 +91,9 @@ namespace FunctionsGraphs
         {
             Parameters.Visibility = System.Windows.Visibility.Hidden;
             Input.Visibility = System.Windows.Visibility.Visible;
+
+            DotX.Content = "0.00";
+            DotY.Content = "0.00";
         }
 
         private void DrawBtn_Click(object sender, RoutedEventArgs e)
@@ -178,21 +180,13 @@ namespace FunctionsGraphs
             Point p = e.GetPosition(Surface);
 
             double x = (p.X - centerX) / cellSize;
-            double y = (p.Y - centerY) / cellSize;
+            double y = (centerY - p.Y) / cellSize;
             double y0 = f(x);
 
             if( Math.Abs(y0 - y) < epsilon )
             {
-                dot.Visibility = Visibility.Visible;
-                dot.Margin = new Thickness(p.X, centerY - y0 * cellSize, 0, 0);
-
                 DotX.Content = x;
                 DotY.Content = y0;
-            }
-            
-            else
-            {
-                dot.Visibility = Visibility.Hidden;
             }
         }
 
@@ -204,18 +198,6 @@ namespace FunctionsGraphs
             b = 0;
             c = 0;
             f = ParabolaFunc;
-
-            dot = new Ellipse
-            {
-                Width = 4,
-                Height = 4,
-                Fill = Brushes.White,
-                Stroke = Brushes.Black,
-                StrokeThickness = 3,
-                Visibility = Visibility.Hidden
-            };
-
-            Surface.Children.Add(dot);
         }
     }
 }
