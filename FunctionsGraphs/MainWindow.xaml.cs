@@ -22,9 +22,12 @@ namespace FunctionsGraphs
     public partial class MainWindow : Window
     {
         double h, l, a, b, c;
-        int f;
+        bool hasDrawn = false;
+        const double epsilon = 0.001;
+        Func<double, double> f;
+        Ellipse dot;
 
-        double XTransform, YTransform;
+        double cellSize, centerX, centerY;
 
         private double ParabolaFunc(double x)
         {
@@ -46,8 +49,11 @@ namespace FunctionsGraphs
             l = double.Parse(IntervalLength.Text);
             h = double.Parse(H.Text);
 
-            XTransform = Surface.Width / (2 * l);
-            YTransform = Surface.Height / (2 * l);
+            centerX = Surface.Width / 2;
+            centerY = Surface.Height / 2;
+
+            cellSize = Math.Min( Surface.Width / (2 * l), Surface.Height / (2 * l) );
+            l = Surface.Width / cellSize * 0.5;
 
             Input.Visibility = System.Windows.Visibility.Hidden;
             Parameters.Visibility = System.Windows.Visibility.Visible;
@@ -69,32 +75,29 @@ namespace FunctionsGraphs
 
         private void Parabola_Checked(object sender, RoutedEventArgs e)
         {
-            f = 1;
+            f = ParabolaFunc;
         }
                 
         private void Sinus_Checked(object sender, RoutedEventArgs e)
         {
-            f = 2;
+            f = SinusFunc;
         }
 
         private void SinusDivX_Checked(object sender, RoutedEventArgs e)
         {
-            f = 3;
-        }
-
-        private void ParamsBtn_Click(object sender, RoutedEventArgs e)
-        {
-            InputParams();
-
-            if (f == 1) DrawFunc(ParabolaFunc);
-            else if (f == 2) DrawFunc(SinusFunc);
-            else if (f == 3) DrawFunc(SinDivXFunc);
+            f = SinDivXFunc;
         }
 
         private void NewBtn_Click(object sender, RoutedEventArgs e)
         {
             Parameters.Visibility = System.Windows.Visibility.Hidden;
             Input.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private void DrawBtn_Click(object sender, RoutedEventArgs e)
+        {
+            InputParams();
+            DrawFunc();
         }
 
         private void DrawLine(double x1, double y1, double x2, double y2, double l, Brush color)
@@ -117,50 +120,80 @@ namespace FunctionsGraphs
             int width = (int)Surface.Width;
             int height = (int)Surface.Height;
 
-            int centerX = width / 2;
-            int centerY = height / 2;
-
             // рисую вертикальные линии координатной сетки
-            for (double x = 0; x <= centerX ; x += XTransform)
+            for (double x = 0; x <= centerX ; x += cellSize)
             {
-                DrawLine(centerX + x, 0, centerX + x, height, 1, System.Windows.Media.Brushes.Gray);
-                DrawLine(centerX - x, 0, centerX - x, height, 1, System.Windows.Media.Brushes.Gray);
+                DrawLine(centerX + x, 0, centerX + x, height, 1, Brushes.Gray);
+                DrawLine(centerX - x, 0, centerX - x, height, 1, Brushes.Gray);
             }
 
             // рисую горизонтальные линии координатной сетки
-            for (double y = 0; y <= centerY; y += YTransform)
+            for (double y = 0; y <= centerY; y += cellSize)
             {
-                DrawLine(0, centerY + y, width, centerY + y, 1, System.Windows.Media.Brushes.Gray);
-                DrawLine(0, centerY - y, width, centerY - y, 1, System.Windows.Media.Brushes.Gray);
+                DrawLine(0, centerY + y, width, centerY + y, 1, Brushes.Gray);
+                DrawLine(0, centerY - y, width, centerY - y, 1, Brushes.Gray);
             }
 
             //рисую ось Х
-            DrawLine(0, centerY, width, centerY, 2, System.Windows.Media.Brushes.Black);
+            DrawLine(0, centerY, width, centerY, 2, Brushes.Black);
 
             // рисую ось у
-            DrawLine( centerX, 0, centerX, height, 2, System.Windows.Media.Brushes.Black);
+            DrawLine( centerX, 0, centerX, height, 2, Brushes.Black);
+
+            // рисую границы
+            DrawLine(0, 0, width, 0, 1, Brushes.Black);
+            DrawLine(0, 0, 0, height, 1, Brushes.Black);
+            DrawLine(width, 0, width, height, 1, Brushes.Black);
+            DrawLine(0, height, width, height, 1, Brushes.Black);
         }
 
-        private void DrawFunc(Func<double, double> f)
+        private void DrawFunc()
         {
             double x1 = -l;
-            double y1 = (l - f(x1)) * YTransform;
+            double y1 = centerY - f(x1) * cellSize;
             double x2 = -l;
             double y2;
 
             do
             {
                 x2 += h;
-                y2 = (l - f(x2)) * YTransform;
+                y2 = centerY - f(x2) * cellSize;
 
-                DrawLine((x1 + l) * XTransform, y1,
-                         (x2 + l) * XTransform, y2,
+                DrawLine(centerX + x1 * cellSize, y1,
+                         centerX + x2 * cellSize, y2,
                          2, System.Windows.Media.Brushes.Blue);
 
                 x1 = x2;
                 y1 = y2;
 
             } while (x2 < l);
+
+            hasDrawn = true;
+        }
+
+        private void Canvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!hasDrawn) return;
+
+            Point p = e.GetPosition(Surface);
+
+            double x = (p.X - centerX) / cellSize;
+            double y = (p.Y - centerY) / cellSize;
+            double y0 = f(x);
+
+            if( Math.Abs(y0 - y) < epsilon )
+            {
+                dot.Visibility = Visibility.Visible;
+                dot.Margin = new Thickness(p.X, centerY - y0 * cellSize, 0, 0);
+
+                DotX.Content = x;
+                DotY.Content = y0;
+            }
+            
+            else
+            {
+                dot.Visibility = Visibility.Hidden;
+            }
         }
 
         public MainWindow()
@@ -170,7 +203,19 @@ namespace FunctionsGraphs
             a = 0;
             b = 0;
             c = 0;
-            f = 0;
+            f = ParabolaFunc;
+
+            dot = new Ellipse
+            {
+                Width = 4,
+                Height = 4,
+                Fill = Brushes.White,
+                Stroke = Brushes.Black,
+                StrokeThickness = 3,
+                Visibility = Visibility.Hidden
+            };
+
+            Surface.Children.Add(dot);
         }
     }
 }
