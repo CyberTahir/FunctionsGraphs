@@ -1,4 +1,4 @@
-﻿<Window x:Class="FunctionsGraphs.MainWindow"
+<Window x:Class="FunctionsGraphs.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -42,7 +42,7 @@
             <Border BorderBrush="Silver" BorderThickness="2" CornerRadius="10"/>
         </Grid>
 
-        <Canvas Name="Surface" Margin="10, 10, 10, 10" Height="600" Width="960" Panel.ZIndex="0" MouseMove="Canvas_MouseMove"/>
+        <Canvas Name="Surface" Margin="10, 10, 10, 10" Height="600" Width="960" Panel.ZIndex="0" MouseLeftButtonUp="Surface_MouseLeftButtonUp"/>
 
         <Label Name="DotX" Content="x: 0.00" HorizontalAlignment="Left" Margin="93,72,0,0" VerticalAlignment="Top" Width="155" Panel.ZIndex="1" Height="25" Background="White"/>
         <Label Name="DotY" Content="y: 0.00" HorizontalAlignment="Left" Margin="93,97,0,0" VerticalAlignment="Top" Width="155" Panel.ZIndex="1" Height="25" Background="White"/>
