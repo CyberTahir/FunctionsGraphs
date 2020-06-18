@@ -22,11 +22,53 @@ namespace FunctionsGraphs
     public partial class MainWindow : Window
     {
         double h, l, a, b, c;
-        bool hasDrawn = false;
-        const double epsilon = 0.3;
-        Func<double, double> f;
-
         double cellSize, centerX, centerY;
+        const double epsilon = 0.8;
+
+        Func<double, double> f;
+        bool hasDrawn;
+
+        Ellipse dot;
+        TranslateTransform tt;
+
+        private void setDefaultParams() {
+            h = 0;
+            l = 0;
+            a = 0;
+            b = 0;
+            c = 0;
+
+            centerX = 0;
+            centerY = 0;
+            cellSize = 0;
+
+            f = ParabolaFunc;
+            hasDrawn = false;
+
+            dot = new Ellipse();
+            tt = new TranslateTransform();
+        }
+
+        private void CreateDot()
+        {
+            dot.Width = 7;
+            dot.Height = 7;
+
+            dot.StrokeThickness = 2;
+
+            dot.Stroke = Brushes.Black;
+            dot.Fill = Brushes.White;
+
+            dot.HorizontalAlignment = HorizontalAlignment.Left;
+            dot.VerticalAlignment = VerticalAlignment.Top;
+
+            dot.Visibility = Visibility.Hidden;
+
+            tt = new TranslateTransform(50, 50);
+            dot.RenderTransform = tt;
+
+            Surface.Children.Add(dot);
+        }
 
         private double ParabolaFunc(double x)
         {
@@ -68,7 +110,6 @@ namespace FunctionsGraphs
         private void StartBtn_Click(object sender, RoutedEventArgs e)
         {
             InputData();
-            Surface.Children.Clear();
             DrawAxis();
         }
 
@@ -96,10 +137,46 @@ namespace FunctionsGraphs
             DotY.Content = "0.00";
         }
 
+        private void Surface_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (!hasDrawn) return;
+
+            Point p = e.GetPosition(Surface);
+
+            double mouseX = p.X;
+            double mouseY = p.Y;
+
+            double x = (mouseX - centerX) / cellSize;
+            double y = (centerY - mouseY) / cellSize;
+            double y0 = f(x);
+
+            if (Math.Abs(y0 - y) < epsilon)
+            {
+                DotX.Content = x;
+                DotY.Content = y0;
+
+                tt.X = mouseX - 3;
+                tt.Y = centerY - y0 * cellSize - 3;
+
+                dot.RenderTransform = tt;
+                dot.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                dot.Visibility = Visibility.Hidden;
+            }
+        }
+
         private void DrawBtn_Click(object sender, RoutedEventArgs e)
         {
             InputParams();
+            Surface.Children.Clear();
+            DrawAxis();
             DrawFunc();
+            CreateDot();
+
+            DotX.Content = "0.00";
+            DotY.Content = "0.00";
         }
 
         private void DrawLine(double x1, double y1, double x2, double y2, double l, Brush color)
@@ -151,15 +228,29 @@ namespace FunctionsGraphs
 
         private void DrawFunc()
         {
+            double yMax = centerY / cellSize;
+
             double x1 = -l;
-            double y1 = centerY - f(x1) * cellSize;
+            double y1 = f(x1);
             double x2 = -l;
             double y2;
+
+            while( Math.Abs(y1) > yMax )
+            {
+                x1 += h;
+                y1 = f(x1);
+            }
+
+            y1 = centerY - y1 * cellSize;
 
             do
             {
                 x2 += h;
-                y2 = centerY - f(x2) * cellSize;
+                y2 = f(x2);
+
+                if (Math.Abs(y2) > yMax) continue;
+
+                y2 = centerY - y2 * cellSize;
 
                 DrawLine(centerX + x1 * cellSize, y1,
                          centerX + x2 * cellSize, y2,
@@ -173,31 +264,10 @@ namespace FunctionsGraphs
             hasDrawn = true;
         }
 
-        private void Canvas_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (!hasDrawn) return;
-
-            Point p = e.GetPosition(Surface);
-
-            double x = (p.X - centerX) / cellSize;
-            double y = (centerY - p.Y) / cellSize;
-            double y0 = f(x);
-
-            if( Math.Abs(y0 - y) < epsilon )
-            {
-                DotX.Content = x;
-                DotY.Content = y0;
-            }
-        }
-
         public MainWindow()
         {
             InitializeComponent();
-
-            a = 0;
-            b = 0;
-            c = 0;
-            f = ParabolaFunc;
+            setDefaultParams();
         }
     }
 }
